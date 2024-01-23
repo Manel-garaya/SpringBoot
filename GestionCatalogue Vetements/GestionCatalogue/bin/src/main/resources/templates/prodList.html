@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Product List</title>
+    <link rel="stylesheet" href="/webjars/bootstrap/5.3.2/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+    <style>
+
+
+        body {
+
+            background-color: #ead4d4;
+        }
+
+        .container {
+            margin-top: 50px;
+        }
+
+        .card {
+            box-shadow: 0 4px 8px rgba(128, 50, 50, 0.1);
+        }
+
+        .card-header {
+            background-color: #642b59;
+            color: #ffffff;
+            padding: 1rem;
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        .btn-success {
+            background-color: #76657a;
+            border-color: #656265;
+        }
+
+        .btn-success:hover {
+            background-color: #f0f6f1;
+            border-color: #10090a;
+        }
+
+        .btn-danger {
+            background-color: #ec6c76;
+            border-color: #b5babe;
+        }
+
+        .btn-danger:hover {
+            background-color: #e1d2d3;
+            border-color: #10090a;
+        }
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #642b59;
+            color: #ffffff;
+        }
+
+        tbody tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        /* Add a subtle box shadow to the table */
+        table {
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Center text in the first column */
+        td:first-child {
+            text-align: center;
+        }
+
+        /* Add a bit of spacing between table cells */
+        td, th {
+            padding: 15px;
+        }
+
+        /* Style for the "Add New Product" button */
+        .btn-success {
+            background-color: #76657a;
+            border-color: #656265;
+            color: #ffffff;
+        }
+
+        .btn-success:hover {
+            background-color: #f0f6f1;
+            border-color: #10090a;
+        }
+
+        /* Style for the "Add To Favoris" button */
+        .btn-secondary {
+            background-color: #944ec4;
+            border-color: #5c359f;
+            color: #ecf0f1;
+        }
+
+        .btn-secondary:hover {
+            background-color: #a16eff;
+            border-color: #5c359f;
+            color: #ffffff;
+        }
+
+        .nav-pills .btn {
+            margin-right: 5px;
+        }
+        .add-product-btn {
+            background-color:#944ec4; /* Another color of your choice */
+            border: 1px solid #5c359f;
+            color: #ecf0f1;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
+
+    </style>
+    <nav class="navbar navbar-expand-lg navbar-light " >
+
+        <div class="container-fluid">
+            <a class="navbar-brand text-white" href="#">Trendy Clothes</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active text-white" aria-current="page" href="/">Home</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="/user/index">Products</a>
+
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="/my_products">My Favoris</a>
+                    </li></ul></div></div></nav>
+</head>
+<body>
+
+<div class="container">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="text-center">TRENDY CLOTHES</h2>
+        </div>
+        <div class="card-body">
+            <a href="/admin/formajout" class="btn btn-success">Add New Product</a><br><br>
+            <div class="form-group"><form class="form-inline form-group" th:action="@{/user/index}" method="get">
+                <input class="form-control form-control-sm" th:value="${mc}" type="search" placeholder="Search" name="mc"
+                       aria-label="Search">
+                <button class="btn btn-outline-success" type="submit"><i class="fas fa-search"></i></button>
+            </form></div>
+
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Image</th>
+                    <th>Reference</th>
+                    <th>Prix</th>
+                    <th>Quantité</th>
+                    <th>Categorie</th>
+                    <th th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}">Action</th>
+                    <th th:if="${#authorization.expression('hasAuthority(''USER'')')}">Action</th>
+
+
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="p:${products}">
+                    <td th:text="${p.id}"></td>
+                    <td th:if="${p.photo==''|| p.photo==null}">
+                        <img src="/photos/inconnu.png" width="50" height="50">
+                    </td>
+                    <td th:unless="${p.photo==''|| p.photo==null}">
+                        <img th:src="@{${'/photos/'+p.photo}}" width="50" height="50">
+                    </td>
+                    <td th:text="${p.reference}"></td>
+                    <td th:text="${p.prix}"></td>
+                    <td th:text="${p.quantite}"></td>
+                    <td th:text="${p.categorie.nom}"></td>
+
+                    <td th:if="${#authorization.expression('hasAuthority(''USER'')')}">
+
+                    <a class="btn btn-secondary btn-sm" th:href="@{/user/add-to-favorites/{id}(id=${p.id})}">Add To Favoris</a></td>
+
+                    <td th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}">
+                        <a href="#" class="btn btn-danger fa fa-trash" data-bs-toggle="modal" data-bs-target="#deleteConfirmationModal"></a>
+                        <a th:href="@{'/admin/edit/'+${p.id}}" class="btn btn-success fa fa-edit"></a>
+                        <!-- Delete Confirmation Modal -->
+                        <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirm Deletion</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Are you sure you want to delete this product?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                        <a th:href="@{'/admin/delete/'+${p.id}}" class="btn btn-danger">Delete</a>
+
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <ul class="nav nav-pills">
+                <li th:each="i,c:${pages}">
+                    <a th:href="@{/user/index(page=${c.index},mc=${mc})}"
+                       th:text="${c.index+1}"
+                       th:class="${currentpage==c.index?'btn btn-primary mx-2' : 'btn btn-outline-primary mx-2'}">
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="text-center mt-3">
+
+    <form th:action="@{/logout}" method="post" class="d-inline">
+        <button class="" type="submit" value="Logout">Logout</button>
+    </form>
+    <span class="logout-icon ml-2">
+
+            <img src="/photos/logout-8.png" alt="Logout Icon" width="20" height="20">
+
+    </span>
+</div>
+<script src="/webjars/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
